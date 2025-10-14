@@ -96,12 +96,12 @@ def scrape_article(url):
         return "Gagal Ekstraksi", "", error_message
     except requests.exceptions.RequestException as e:
         # Menangkap semua error terkait koneksi/timeout
-        error_message = f"Gagal terhubung ke URL. Tipe Error: {type(e).__name__} pada URL: {e.request.url}"
+        error_message = f"Gagal terhubung ke URL. Error: {type(e).__name__} pada URL: {e.request.url}"
         st.error(f"DEBUG: {error_message}")
         return "Gagal Ekstraksi", "", error_message
     except Exception as e:
         # Menangkap error mungkin terjadi saat parsing
-        error_message = f"Terjadi kesalahan tak terduga saat scraping. Tipe Error: {type(e).__name__}. Detail: {str(e)}"
+        error_message = f"Terjadi kesalahan saat scraping. Error: {type(e).__name__}. Detail: {str(e)}"
         st.error(f"DEBUG: {error_message}")
         return "Gagal Ekstraksi", "", error_message
 
@@ -155,7 +155,7 @@ def comprehensive_analysis_with_llm(article_text):
                 time.sleep(2)
                 continue
             else:
-                return {"error": f"Server AI Error: {e}"}
+                return {"error": f"Gemini API Error: {e}"}
         except requests.exceptions.ReadTimeout as e:
             return {"error": f"Server timeout. Coba lagi dalam beberapa saat. Detail: {e}"}
         except Exception as e:
