@@ -1,6 +1,15 @@
 <div align="center">
 
-  # 📰 News Framing Analysis — Automated Media Intelligence
+  # ⚠️ PROJECT ARCHIVED ⚠️
+  **This project has been migrated and evolved into [Omnius](https://github.com/flxhrdyn/Omnius).**
+
+  > [!IMPORTANT]
+  > I have migrated this project from **Streamlit to React** to provide a more robust and premium experience. 
+  > This repository is now archived and will no longer receive updates.
+
+  ---
+
+  # News Framing Analysis — Automated Media Intelligence
   **Automated Framing Analysis using Robert Entman's Methodology & LLM Intelligence.**
   
   [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
@@ -8,6 +17,7 @@
   [![Llama 3](https://img.shields.io/badge/Llama_3.3-0668E1?style=for-the-badge&logo=meta&logoColor=white)](https://llama.meta.com/)
   [![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
   [![NLTK](https://img.shields.io/badge/NLTK-154F82?style=for-the-badge&logo=python&logoColor=white)](https://www.nltk.org/)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 </div>
 
 ---
@@ -137,5 +147,12 @@ The application can be configured via the sidebar and internal configuration fil
 ## Author
 
 **Felix Hardyan**
+*   [Omnius (New Project)](https://github.com/flxhrdyn/Omnius)
 *   [GitHub](https://github.com/flxhrdyn)
 *   [Hugging Face](https://huggingface.co/felixhrdyn)
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
