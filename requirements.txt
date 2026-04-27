@@ -1,11 +1,10 @@
 streamlit
 requests
-urllib3
 beautifulsoup4
 lxml
-sentence-transformers
 networkx
 matplotlib
 nltk
 scikit-learn
 langdetect
+groq
