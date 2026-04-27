@@ -11,8 +11,13 @@ import nltk
 import streamlit as st
 from langdetect import detect, LangDetectException
 
-from src.analyzer import analyze_article, generate_comparative_report, ArticleAnalysis
-from src.scraper import scrape_article
+from src.analyzer import (
+    analyze_article, 
+    generate_comparative_report, 
+    ArticleAnalysis,
+    analyze_multiple_articles
+)
+from src.scraper import scrape_article, scrape_multiple_articles
 from src.visualizer import build_keyword_graph
 from src.ui.styles import apply_custom_style
 from src.ui.sidebar import render_sidebar
@@ -77,13 +82,13 @@ def _run_analysis_page(model_name: str):
         if st.button("📝 Analisis dari Link", type="primary"):
             urls = [u.strip() for u in urls_input.split("\n") if u.strip()]
             if 2 <= len(urls) <= 3:
-                with st.spinner("Mengekstrak berita dari link..."):
-                    for url in urls:
-                        title, text, error = scrape_article(url)
+                with st.spinner("Mengekstrak berita dari link secara paralel..."):
+                    scraping_results = scrape_multiple_articles(urls)
+                    for i, (title, text, error) in enumerate(scraping_results):
                         if not error:
-                            articles_to_analyze.append((title, text, url))
+                            articles_to_analyze.append((title, text, urls[i]))
                         else:
-                            st.error(f"Gagal mengambil {url}: {error}")
+                            st.error(f"Gagal mengambil {urls[i]}: {error}")
             else:
                 st.warning("Masukkan 2 hingga 3 link berita.")
 
@@ -111,26 +116,15 @@ def _run_analysis_page(model_name: str):
         st.error("API Key Groq belum dikonfigurasi. Tambahkan di file .streamlit/secrets.toml.")
         st.stop()
 
-    all_results = []
-    progress = st.progress(0, text="Menganalisis konten dengan AI...")
-
-    for i, (title, text, url) in enumerate(articles_to_analyze):
-        progress.progress((i + 1) / len(articles_to_analyze), text=f"Menganalisis: {title[:40]}...")
-
-        lang = "indonesian"
-        try:
-            if detect(text) == "en":
-                lang = "english"
-        except LangDetectException:
-            pass
-
-        analysis = analyze_article(text, model_name)
-        if "error" in analysis:
-            st.error(f"Error pada artikel '{title}': {analysis['error']}")
-        else:
-            all_results.append(ArticleAnalysis(url, title, text, analysis, None, lang))
-
-    progress.empty()
+    with st.spinner("Menganalisis konten secara paralel dengan AI..."):
+        all_results = analyze_multiple_articles(articles_to_analyze, model_name)
+    
+    # Filter hasil yang error jika ada
+    errors = [res for res in all_results if res.error]
+    for err in errors:
+        st.error(f"Penyebab: {err.error}")
+    
+    all_results = [res for res in all_results if not res.error]
 
     if len(all_results) < 2:
         st.error("Minimal dua artikel harus berhasil dianalisis untuk menampilkan perbandingan.")

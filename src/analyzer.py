@@ -1,5 +1,6 @@
 import json
 from collections import namedtuple
+from concurrent.futures import ThreadPoolExecutor
 
 import streamlit as st
 from groq import Groq
@@ -11,6 +12,7 @@ from src.config import (
     COMPARATIVE_SYSTEM_PROMPT,
 )
 from src.scraper import scrape_article
+from src.models import AnalysisResultModel
 
 
 # Struktur data yang menyimpan semua informasi hasil analisis untuk satu artikel.
@@ -69,10 +71,15 @@ def analyze_article(article_text: str, model_name: str) -> dict:
             response_format={"type": "json_object"},
             temperature=0.2,
         )
-        return json.loads(completion.choices[0].message.content)
+        # Validasi hasil JSON menggunakan Pydantic
+        raw_json = completion.choices[0].message.content
+        validated_data = AnalysisResultModel.model_validate_json(raw_json)
+        
+        # Kembalikan sebagai dict agar kompatibel dengan kode UI yang sudah ada
+        return validated_data.model_dump()
 
     except Exception as e:
-        return {"error": f"Terjadi kesalahan saat memanggil Groq API: {str(e)}"}
+        return {"error": f"Gagal memvalidasi hasil analisis: {str(e)}"}
 
 
 @st.cache_data(ttl=3600, show_spinner="Membuat laporan analisis komparatif...")
@@ -161,3 +168,36 @@ def run_analysis_pipeline(url: str, model_name: str) -> ArticleAnalysis:
         return ArticleAnalysis(url, title, text, None, f"Gagal menganalisis konten: {analysis_results['error']}", lang)
 
     return ArticleAnalysis(url, title, text, analysis_results, None, lang)
+
+
+def analyze_multiple_articles(articles: list[tuple], model_name: str) -> list[ArticleAnalysis]:
+    """Menganalisis beberapa artikel secara paralel menggunakan ThreadPoolExecutor.
+
+    Args:
+        articles: List berisi tuple (judul, teks, url).
+        model_name: Nama model Groq yang digunakan.
+
+    Returns:
+        List berisi objek ArticleAnalysis untuk setiap artikel.
+    """
+    def _task(article_data):
+        title, text, url = article_data
+        
+        # Deteksi bahasa (dilakukan di dalam thread agar tidak blocking)
+        lang = "indonesian"
+        try:
+            from langdetect import detect
+            if detect(text) == "en":
+                lang = "english"
+        except:
+            pass
+            
+        analysis = analyze_article(text, model_name)
+        if "error" in analysis:
+            return ArticleAnalysis(url, title, text, None, f"Error: {analysis['error']}", lang)
+        return ArticleAnalysis(url, title, text, analysis, None, lang)
+
+    with ThreadPoolExecutor(max_workers=len(articles)) as executor:
+        results = list(executor.map(_task, articles))
+        
+    return results

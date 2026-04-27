@@ -1,5 +1,7 @@
 import requests
 import re
+from concurrent.futures import ThreadPoolExecutor
+
 import streamlit as st
 from bs4 import BeautifulSoup
 
@@ -172,3 +174,17 @@ def _extract_body(soup: BeautifulSoup) -> str:
         article_text = " ".join(words[:MAX_ARTICLE_WORDS]) + "... [Teks dipotong karena melebihi batas panjang API]"
 
     return article_text
+
+
+def scrape_multiple_articles(urls: list[str]) -> list[tuple[str, str, str | None]]:
+    """Mengambil teks dari beberapa URL secara paralel.
+
+    Args:
+        urls: List berisi URL berita.
+
+    Returns:
+        List berisi tuple (judul, teks, error) untuk setiap URL.
+    """
+    with ThreadPoolExecutor(max_workers=len(urls)) as executor:
+        results = list(executor.map(scrape_article, urls))
+    return results

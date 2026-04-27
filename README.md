@@ -14,17 +14,18 @@
 
 ## Overview
 
-Dalam era banjir informasi, memahami bagaimana media membingkai sebuah isu sangatlah krusial. **News Framing Analysis** adalah platform intelijen media yang mengimplementasikan teori **Robert Entman (1993)** secara otomatis untuk membedah narasi berita online.
+In the era of information overload, understanding how media outlets frame an issue is crucial. **News Framing Analysis** is a media intelligence platform that implements **Robert Entman's (1993)** framing theory automatically to dissect online news narratives.
 
-Aplikasi ini mentransformasi teks berita statis menjadi data analitik yang mendalam, memungkinkan peneliti dan analis untuk mengidentifikasi definisi masalah, penyebab, penilaian moral, dan solusi yang diimplikasikan oleh berbagai sumber media secara komparatif.
+The application transforms static news text into deep analytical insights, allowing researchers and analysts to comparatively identify problem definitions, causes, moral evaluations, and implied solutions across various media sources.
 
 ## Technical Features
 
-- **Automated Framing Intelligence**: Mengidentifikasi 4 fungsi framing Robert Entman (Problem Definition, Causal Interpretation, Moral Evaluation, Treatment Recommendation) menggunakan LLM tercanggih.
-- **Comparative Analysis Engine**: Menghasilkan laporan perbandingan antar media secara formal untuk melihat perbedaan sudut pandang secara objektif.
-- **Actor & Sentiment Mapping**: Mendeteksi aktor utama yang ditonjolkan dan nada sentimen pemberitaan secara otomatis.
-- **Keyword Relationship Graph**: Visualisasi interaktif menggunakan **NetworkX** untuk melihat keterkaitan narasi antar media berdasarkan kesamaan kata kunci.
-- **Premium Design System**: Antarmuka berbasis Streamlit dengan desain kustom, tipografi modern (Inter), dan navigasi instan yang dioptimalkan.
+- **Automated Framing Intelligence**: Identifies Robert Entman's 4 framing functions (Problem Definition, Causal Interpretation, Moral Evaluation, Treatment Recommendation) using state-of-the-art LLMs.
+- **Comparative Analysis Engine**: Generates formal comparative reports to objectively identify divergent perspectives across media outlets.
+- **Actor & Sentiment Mapping**: Automatically detects prominent actors (individuals, groups, or institutions) and the underlying sentiment tone of the coverage.
+- **Keyword Relationship Graph**: Interactive visualization using **NetworkX** to reveal narrative links between outlets based on shared keyword significance.
+- **Premium Design System**: A Streamlit-based interface featuring a custom design system, modern typography (Inter), and optimized instant navigation.
+- **Structured Data Validation**: Implements **Pydantic** to ensure LLM outputs are always consistent, validated, and reliable.
 
 ## Technology Stack
 
@@ -33,6 +34,7 @@ Aplikasi ini mentransformasi teks berita statis menjadi data analitik yang menda
 - **LLM Orchestration**: Groq SDK (Llama 3.3-70B, Llama 3.1-8B, Qwen)
 - **NLP Processing**: NLTK (Stopwords removal), Scikit-learn (TF-IDF Vectorization)
 - **Web Intelligence**: BeautifulSoup4 (Advanced scraping with garbage filtering)
+- **Validation**: Pydantic v2
 
 ### Frontend & Visualization
 - **Framework**: Streamlit (Custom Premium CSS)
@@ -50,9 +52,10 @@ graph TD
     
     subgraph Analysis_Layer [AI Processing]
         SCR -->|Clean Text| LLM[Groq AI Engine]
-        LLM -->|Framing| FRM[Entman Analysis]
-        LLM -->|Actors| ACT[Actor Mapping]
-        LLM -->|Sentiment| SNT[Sentiment Detection]
+        LLM -->|Validate| PYD[Pydantic Models]
+        PYD -->|Framing| FRM[Entman Analysis]
+        PYD -->|Actors| ACT[Actor Mapping]
+        PYD -->|Sentiment| SNT[Sentiment Detection]
     end
     
     subgraph Visualization_Layer [Intelligence Output]
@@ -67,14 +70,15 @@ graph TD
 
 ## Performance & Methodology
 
-Aplikasi ini dikembangkan dengan fokus pada akurasi metodologis sesuai paradigma Robert Entman.
+This application is developed with a strict focus on methodological accuracy according to Robert Entman's paradigm.
 
 ### Core Metrics & Capabilities
 | Parameter | Value | Description |
 | :--- | :--- | :--- |
 | **Methodology** | **Robert Entman** | 4-Function Framing Analysis |
 | **Processing Speed** | **< 5 seconds** | Per article analysis using Groq LPU |
-| **Max Capacity** | **3.000 Words** | Optimized for long-form investigative news |
+| **Max Capacity** | **3,000 Words** | Optimized for long-form investigative news |
+| **Data Validation** | **Pydantic** | Zero-failure structured output assurance |
 | **Visual Engine** | **NetworkX** | Relationship graph for narrative links |
 
 ---
@@ -99,7 +103,7 @@ uv sync
 ```
 
 **Step 2: Configuration**
-Buat file `.streamlit/secrets.toml` dan tambahkan API Key Anda:
+Create a `.streamlit/secrets.toml` file and add your API Key:
 ```toml
 GROQ_API_KEY = "gsk_..."
 ```
@@ -109,14 +113,24 @@ GROQ_API_KEY = "gsk_..."
 uv run streamlit run app.py
 ```
 
+**Step 4: Docker (Optional)**
+If you prefer using Docker, you can build and run the containerized version:
+```bash
+# Build the image
+docker build -t news-framing-analysis .
+
+# Run the container
+docker run -p 8501:8501 news-framing-analysis
+```
+
 ---
 
 ## Configuration
 
-Aplikasi dapat dikonfigurasi melalui sidebar dan file konfigurasi internal:
-- `AVAILABLE_MODELS`: Daftar model yang tersedia (Llama 3.3, 3.1, Qwen).
-- `MAX_ARTICLE_WORDS`: Batas kata untuk pemrosesan API (Default: `3000`).
-- `CUSTOM_STOPWORDS`: Filter kata kunci khusus untuk media Indonesia.
+The application can be configured via the sidebar and internal configuration files:
+- `AVAILABLE_MODELS`: List of supported models (Llama 3.3, 3.1, Qwen).
+- `MAX_ARTICLE_WORDS`: Word limit for API processing (Default: `3000`).
+- `CUSTOM_STOPWORDS`: Keyword filters specifically tuned for Indonesian and Global media.
 
 ---
 
