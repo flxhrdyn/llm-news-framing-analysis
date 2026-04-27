@@ -1,7 +1,18 @@
 [project]
 name = "llm-news-framing-analysis"
 version = "0.1.0"
-description = "Add your description here"
+description = "Automated news framing analysis tool based on Robert Entman's methodology using Groq LLM intelligence."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "streamlit",
+    "requests",
+    "beautifulsoup4",
+    "lxml",
+    "networkx",
+    "matplotlib",
+    "nltk",
+    "scikit-learn",
+    "langdetect",
+    "groq",
+]
